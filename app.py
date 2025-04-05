@@ -25,7 +25,10 @@ def parse_replay(file):
 
         json_start = data.find(b'{')
         json_data = data[json_start:].decode('utf-8', errors='ignore')
-        replay = json.loads(json_data)
+
+        # Buscar el primer objeto JSON válido
+        decoder = json.JSONDecoder()
+        replay, _ = decoder.raw_decode(json_data)
 
         players = replay.get('players', [])
         match_time = replay.get('dateTime', None)
