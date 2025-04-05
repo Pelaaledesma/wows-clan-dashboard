@@ -24,7 +24,10 @@ def parse_replay(file):
             data = file.read()
 
         json_start = data.find(b'{')
-        json_data = data[json_start:].decode('utf-8', errors='ignore')
+        if isinstance(json_start, int):
+            json_data = data[json_start:].decode('utf-8', errors='ignore')
+        else:
+            raise ValueError("No se encontró el inicio de un objeto JSON")
 
         # Buscar el primer objeto JSON válido
         decoder = json.JSONDecoder()
@@ -32,6 +35,11 @@ def parse_replay(file):
 
         players = replay.get('players', [])
         match_time = replay.get('dateTime', None)
+        try:
+            match_time = int(match_time)
+        except (TypeError, ValueError):
+            match_time = None
+
         battle_time = datetime.fromtimestamp(match_time) if match_time else None
         map_name = replay.get('mapDisplayName', 'Desconocido')
 
